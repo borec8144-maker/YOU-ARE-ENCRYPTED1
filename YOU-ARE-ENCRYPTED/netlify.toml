@@ -1,0 +1,33 @@
+
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/api/verification/start"
+  to = "/.netlify/functions/verification-start"
+  status = 200
+
+[[redirects]]
+  from = "/api/verification/status"
+  to = "/.netlify/functions/verification-status"
+  status = 200
+
+[[redirects]]
+  from = "/api/keys/issue"
+  to = "/.netlify/functions/key-issue"
+  status = 200
+
+[[redirects]]
+  from = "/api/keys/validate"
+  to = "/.netlify/functions/key-validate"
+  status = 200
+
+[[redirects]]
+  from = "/api/lootlabs-postback"
+  to = "/.netlify/functions/lootlabs-postback"
+  status = 200
+

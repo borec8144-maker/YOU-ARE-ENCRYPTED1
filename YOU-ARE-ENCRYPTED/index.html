@@ -1,0 +1,1079 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#050000">
+<title>YOU ARE ENCRYPTED</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+html,body{
+    width:100%;
+    min-height:100%;
+    background:#030000;
+    color:#ff2020;
+    font-family:Consolas,"Courier New",monospace;
+}
+
+body{
+    min-height:100vh;
+    overflow-x:hidden;
+}
+
+body:before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:100;
+    background:repeating-linear-gradient(
+        to bottom,
+        rgba(255,0,0,.025) 0px,
+        rgba(255,0,0,.025) 1px,
+        transparent 1px,
+        transparent 4px
+    );
+}
+
+body:after{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:101;
+    box-shadow:
+        inset 0 0 140px rgba(255,0,0,.12),
+        inset 0 0 35px rgba(255,0,0,.08);
+}
+
+.container{
+    width:min(900px,92%);
+    margin:40px auto;
+}
+
+.panel{
+    position:relative;
+    background:
+        linear-gradient(
+            180deg,
+            rgba(30,0,0,.97),
+            rgba(5,0,0,.98)
+        );
+    border:1px solid #720000;
+    box-shadow:
+        0 0 25px rgba(255,0,0,.08),
+        inset 0 0 40px rgba(255,0,0,.025);
+}
+
+.header{
+    padding:30px 28px 24px;
+    border-bottom:1px solid #420000;
+}
+
+.title{
+    color:#ff1616;
+    font-size:clamp(28px,6vw,54px);
+    font-weight:900;
+    letter-spacing:4px;
+    text-shadow:
+        0 0 8px #ff0000,
+        0 0 25px rgba(255,0,0,.4);
+}
+
+.subtitle{
+    margin-top:10px;
+    color:#8e2424;
+    font-size:13px;
+    letter-spacing:2px;
+}
+
+.status-row{
+    display:flex;
+    justify-content:space-between;
+    gap:20px;
+    margin-top:20px;
+    flex-wrap:wrap;
+}
+
+.status{
+    color:#ff4040;
+    font-size:12px;
+}
+
+.status span{
+    color:#ff0000;
+}
+
+.content{
+    padding:28px;
+}
+
+.terminal{
+    min-height:155px;
+    padding:18px;
+    border:1px solid #390000;
+    background:#020000;
+    color:#a82424;
+    font-size:13px;
+    line-height:1.8;
+    overflow:hidden;
+}
+
+.terminal-line{
+    white-space:pre-wrap;
+}
+
+.prompt{
+    color:#ff1616;
+}
+
+.step{
+    margin-top:28px;
+    padding:22px;
+    border:1px solid #450000;
+    background:rgba(20,0,0,.45);
+}
+
+.step-title{
+    color:#ff3030;
+    font-size:14px;
+    letter-spacing:2px;
+    margin-bottom:10px;
+}
+
+.step-description{
+    color:#702020;
+    font-size:12px;
+    line-height:1.7;
+}
+
+.button{
+    width:100%;
+    margin-top:18px;
+    padding:15px;
+    border:1px solid #a00000;
+    background:#260000;
+    color:#ff2525;
+    font-family:inherit;
+    font-size:14px;
+    font-weight:bold;
+    letter-spacing:2px;
+    cursor:pointer;
+    transition:.15s;
+}
+
+.button:hover:not(:disabled){
+    background:#620000;
+    color:white;
+    box-shadow:0 0 18px rgba(255,0,0,.2);
+}
+
+.button:disabled{
+    cursor:not-allowed;
+    opacity:.45;
+}
+
+.progress-wrap{
+    margin-top:18px;
+    height:5px;
+    background:#180000;
+    border:1px solid #360000;
+    overflow:hidden;
+}
+
+.progress{
+    width:0%;
+    height:100%;
+    background:#ff1010;
+    box-shadow:0 0 12px #ff0000;
+    transition:width .3s;
+}
+
+.progress-text{
+    margin-top:9px;
+    color:#702020;
+    font-size:11px;
+}
+
+.key-area{
+    display:none;
+    margin-top:28px;
+    padding:22px;
+    border:1px solid #8b0000;
+    background:rgba(30,0,0,.55);
+}
+
+.key-title{
+    color:#ff3030;
+    font-size:14px;
+    letter-spacing:2px;
+}
+
+.key-box{
+    margin-top:16px;
+    padding:18px 12px;
+    border:1px solid #6d0000;
+    background:#030000;
+    text-align:center;
+    color:#ff1e1e;
+    font-size:clamp(16px,4vw,26px);
+    letter-spacing:2px;
+    word-break:break-all;
+    min-height:62px;
+}
+
+.copy{
+    margin-top:12px;
+}
+
+.message{
+    margin-top:16px;
+    min-height:20px;
+    color:#8d2929;
+    font-size:12px;
+    line-height:1.6;
+}
+
+.footer{
+    padding:18px 28px;
+    border-top:1px solid #300000;
+    color:#481414;
+    font-size:10px;
+    line-height:1.7;
+}
+
+.error{
+    color:#ff3030;
+}
+
+.success{
+    color:#ff7777;
+}
+
+@keyframes glitch{
+    0%{transform:translate(0)}
+    20%{transform:translate(-2px,1px)}
+    40%{transform:translate(2px,-1px)}
+    60%{transform:translate(-1px,2px)}
+    80%{transform:translate(1px,-2px)}
+    100%{transform:translate(0)}
+}
+
+.glitch{
+    animation:glitch .12s infinite;
+}
+
+@media(max-width:600px){
+    .container{
+        margin:15px auto;
+    }
+
+    .header,
+    .content{
+        padding:20px;
+    }
+
+    .title{
+        letter-spacing:2px;
+    }
+
+    .terminal{
+        font-size:11px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="panel">
+
+        <div class="header">
+
+            <div id="title" class="title">
+                YOU ARE ENCRYPTED
+            </div>
+
+            <div class="subtitle">
+                UNAUTHORIZED ACCESS DETECTED // SECURITY PROTOCOL ACTIVE
+            </div>
+
+            <div class="status-row">
+
+                <div class="status">
+                    SYSTEM:
+                    <span id="systemStatus">ONLINE</span>
+                </div>
+
+                <div class="status">
+                    CONNECTION:
+                    <span id="connectionStatus">SECURE</span>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="content">
+
+            <div class="terminal" id="terminal">
+
+                <div class="terminal-line">
+                    <span class="prompt">[SYSTEM]</span> Initializing encrypted access protocol...
+                </div>
+
+                <div class="terminal-line">
+                    <span class="prompt">[SYSTEM]</span> Generating secure verification session...
+                </div>
+
+                <div class="terminal-line">
+                    <span class="prompt">[SYSTEM]</span> Waiting for authorization...
+                </div>
+
+            </div>
+
+            <div class="step">
+
+                <div class="step-title">
+                    STEP 01 // VERIFICATION
+                </div>
+
+                <div class="step-description">
+                    Complete the required verification process.
+                    Your verification is confirmed by the server before
+                    an access key can be issued.
+                </div>
+
+                <button
+                    id="verifyButton"
+                    class="button"
+                    type="button"
+                >
+                    INITIALIZE VERIFICATION
+                </button>
+
+                <div class="progress-wrap">
+                    <div
+                        id="progress"
+                        class="progress"
+                    ></div>
+                </div>
+
+                <div
+                    id="progressText"
+                    class="progress-text"
+                >
+                    VERIFICATION NOT STARTED
+                </div>
+
+            </div>
+
+            <div
+                id="keyArea"
+                class="key-area"
+            >
+
+                <div class="key-title">
+                    STEP 02 // ACCESS KEY
+                </div>
+
+                <div
+                    id="keyBox"
+                    class="key-box"
+                >
+                    WAITING FOR KEY...
+                </div>
+
+                <button
+                    id="copyButton"
+                    class="button copy"
+                    type="button"
+                    disabled
+                >
+                    COPY ACCESS KEY
+                </button>
+
+                <div
+                    id="copyMessage"
+                    class="message"
+                ></div>
+
+            </div>
+
+            <div
+                id="message"
+                class="message"
+            ></div>
+
+        </div>
+
+        <div class="footer">
+            YOU ARE ENCRYPTED // SERVER-SIDE VERIFICATION REQUIRED //
+            DO NOT TRUST CLIENT-SIDE COMPLETION
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+const API_BASE = "https://YOUR-BACKEND-DOMAIN.example";
+
+const verifyButton =
+    document.getElementById("verifyButton");
+
+const copyButton =
+    document.getElementById("copyButton");
+
+const keyArea =
+    document.getElementById("keyArea");
+
+const keyBox =
+    document.getElementById("keyBox");
+
+const copyMessage =
+    document.getElementById("copyMessage");
+
+const message =
+    document.getElementById("message");
+
+const terminal =
+    document.getElementById("terminal");
+
+const progress =
+    document.getElementById("progress");
+
+const progressText =
+    document.getElementById("progressText");
+
+const systemStatus =
+    document.getElementById("systemStatus");
+
+const connectionStatus =
+    document.getElementById("connectionStatus");
+
+let sessionId = null;
+let verificationId = null;
+let offerUrl = null;
+let verificationComplete = false;
+let polling = false;
+let currentKey = null;
+
+function randomBytes(length) {
+    const array =
+        new Uint8Array(length);
+
+    crypto.getRandomValues(array);
+
+    return Array.from(array)
+        .map(value =>
+            value.toString(16).padStart(2, "0")
+        )
+        .join("");
+}
+
+function createSessionId() {
+    return randomBytes(16);
+}
+
+function addTerminal(text, type = "normal") {
+
+    const line =
+        document.createElement("div");
+
+    line.className =
+        "terminal-line";
+
+    const prefix =
+        document.createElement("span");
+
+    prefix.className =
+        "prompt";
+
+    if (type === "error") {
+        prefix.textContent = "[ERROR]";
+    } else if (type === "success") {
+        prefix.textContent = "[OK]";
+    } else {
+        prefix.textContent = "[SYSTEM]";
+    }
+
+    line.appendChild(prefix);
+
+    line.appendChild(
+        document.createTextNode(" " + text)
+    );
+
+    terminal.appendChild(line);
+
+    terminal.scrollTop =
+        terminal.scrollHeight;
+}
+
+function setMessage(text, type = "") {
+
+    message.textContent =
+        text;
+
+    message.className =
+        "message " + type;
+}
+
+function setProgress(percent, text) {
+
+    const safe =
+        Math.max(
+            0,
+            Math.min(100, percent)
+        );
+
+    progress.style.width =
+        safe + "%";
+
+    progressText.textContent =
+        text;
+}
+
+async function apiRequest(path, options = {}) {
+
+    const response =
+        await fetch(
+            API_BASE + path,
+            {
+                ...options,
+                cache: "no-store",
+                headers: {
+                    "Content-Type":
+                        "application/json",
+                    "Accept":
+                        "application/json",
+                    ...(options.headers || {})
+                }
+            }
+        );
+
+    let data = null;
+
+    try {
+        data = await response.json();
+    } catch {
+        data = null;
+    }
+
+    if (!response.ok) {
+
+        const error =
+            data &&
+            typeof data.error === "string"
+                ? data.error
+                : "HTTP_" + response.status;
+
+        throw new Error(error);
+    }
+
+    return data;
+}
+
+function isValidKey(key) {
+
+    return /^[A-Z0-9]{5}(?:-[A-Z0-9]{5}){4}$/.test(
+        key
+    );
+}
+
+function showKey(key) {
+
+    if (!isValidKey(key)) {
+        throw new Error(
+            "INVALID_KEY_FORMAT"
+        );
+    }
+
+    currentKey = key;
+
+    keyArea.style.display =
+        "block";
+
+    copyButton.disabled =
+        false;
+
+    keyBox.textContent =
+        "";
+
+    const characters =
+        key.split("");
+
+    let index = 0;
+
+    const animation =
+        setInterval(() => {
+
+            if (index >= characters.length) {
+
+                clearInterval(animation);
+
+                keyBox.classList.remove(
+                    "glitch"
+                );
+
+                addTerminal(
+                    "ACCESS KEY ISSUED.",
+                    "success"
+                );
+
+                setMessage(
+                    "Verification completed successfully. Your access key is ready.",
+                    "success"
+                );
+
+                return;
+            }
+
+            keyBox.textContent +=
+                characters[index];
+
+            index++;
+
+        }, 35);
+
+    keyBox.classList.add("glitch");
+}
+
+async function createVerificationSession() {
+
+    sessionId =
+        createSessionId();
+
+    addTerminal(
+        "Creating secure verification session..."
+    );
+
+    const data =
+        await apiRequest(
+            "/api/verification/start",
+            {
+                method: "POST",
+                body: JSON.stringify({
+                    sessionId
+                })
+            }
+        );
+
+    if (
+        !data ||
+        typeof data.id !== "string"
+    ) {
+        throw new Error(
+            "INVALID_SESSION_RESPONSE"
+        );
+    }
+
+    verificationId =
+        data.id;
+
+    if (
+        typeof data.offerUrl === "string" &&
+        data.offerUrl.startsWith("https://")
+    ) {
+        offerUrl =
+            data.offerUrl;
+    }
+
+    addTerminal(
+        "Verification session created.",
+        "success"
+    );
+
+    return data;
+}
+
+async function getVerificationStatus() {
+
+    if (!verificationId) {
+        throw new Error(
+            "NO_VERIFICATION_ID"
+        );
+    }
+
+    return await apiRequest(
+        "/api/verification/status?id=" +
+        encodeURIComponent(
+            verificationId
+        ),
+        {
+            method: "GET"
+        }
+    );
+}
+
+async function requestKey() {
+
+    if (!verificationId) {
+        throw new Error(
+            "NO_VERIFICATION_ID"
+        );
+    }
+
+    addTerminal(
+        "Requesting server-side access key..."
+    );
+
+    const data =
+        await apiRequest(
+            "/api/keys/issue",
+            {
+                method: "POST",
+                body: JSON.stringify({
+                    verificationId,
+                    sessionId
+                })
+            }
+        );
+
+    if (
+        !data ||
+        typeof data.key !== "string"
+    ) {
+        throw new Error(
+            "KEY_NOT_ISSUED"
+        );
+    }
+
+    if (!isValidKey(data.key)) {
+        throw new Error(
+            "SERVER_RETURNED_INVALID_KEY"
+        );
+    }
+
+    return data.key;
+}
+
+async function waitForVerification() {
+
+    if (polling) {
+        return;
+    }
+
+    polling = true;
+
+    const started =
+        Date.now();
+
+    const timeout =
+        10 * 60 * 1000;
+
+    while (
+        Date.now() - started <
+        timeout
+    ) {
+
+        let status;
+
+        try {
+            status =
+                await getVerificationStatus();
+        } catch (error) {
+            polling = false;
+            throw error;
+        }
+
+        if (!status) {
+
+            await new Promise(
+                resolve =>
+                    setTimeout(
+                        resolve,
+                        3000
+                    )
+            );
+
+            continue;
+        }
+
+        const current =
+            String(
+                status.status || ""
+            ).toLowerCase();
+
+        if (
+            current === "completed" ||
+            current === "verified" ||
+            current === "success"
+        ) {
+
+            polling = false;
+
+            verificationComplete =
+                true;
+
+            setProgress(
+                100,
+                "VERIFICATION COMPLETE"
+            );
+
+            addTerminal(
+                "Verification confirmed by server.",
+                "success"
+            );
+
+            return true;
+        }
+
+        if (
+            current === "rejected" ||
+            current === "failed"
+        ) {
+
+            polling = false;
+
+            throw new Error(
+                "VERIFICATION_REJECTED"
+            );
+        }
+
+        if (
+            current === "expired"
+        ) {
+
+            polling = false;
+
+            throw new Error(
+                "VERIFICATION_EXPIRED"
+            );
+        }
+
+        const elapsed =
+            Date.now() - started;
+
+        const percent =
+            Math.min(
+                95,
+                Math.floor(
+                    elapsed /
+                    timeout *
+                    100
+                )
+            );
+
+        setProgress(
+            percent,
+            "WAITING FOR VERIFICATION..."
+        );
+
+        await new Promise(
+            resolve =>
+                setTimeout(
+                    resolve,
+                    3000
+                )
+        );
+    }
+
+    polling = false;
+
+    throw new Error(
+        "VERIFICATION_TIMEOUT"
+    );
+}
+
+verifyButton.addEventListener(
+    "click",
+    async () => {
+
+        if (verificationComplete) {
+            return;
+        }
+
+        verifyButton.disabled =
+            true;
+
+        systemStatus.textContent =
+            "VERIFYING";
+
+        connectionStatus.textContent =
+            "ACTIVE";
+
+        setMessage("");
+
+        try {
+
+            if (!verificationId) {
+
+                const session =
+                    await createVerificationSession();
+
+                if (
+                    session &&
+                    typeof session.offerUrl ===
+                    "string" &&
+                    session.offerUrl.startsWith(
+                        "https://"
+                    )
+                ) {
+                    offerUrl =
+                        session.offerUrl;
+                }
+            }
+
+            setProgress(
+                10,
+                "VERIFICATION SESSION READY"
+            );
+
+            addTerminal(
+                "Authorization required."
+            );
+
+            if (offerUrl) {
+
+                window.open(
+                    offerUrl,
+                    "_blank",
+                    "noopener,noreferrer"
+                );
+
+                addTerminal(
+                    "Verification provider opened in a new tab."
+                );
+
+            } else {
+
+                addTerminal(
+                    "Waiting for verification provider..."
+                );
+            }
+
+            setProgress(
+                20,
+                "WAITING FOR COMPLETION"
+            );
+
+            await waitForVerification();
+
+            setProgress(
+                90,
+                "ISSUING ACCESS KEY"
+            );
+
+            const key =
+                await requestKey();
+
+            showKey(key);
+
+            verifyButton.textContent =
+                "VERIFICATION COMPLETE";
+
+            verifyButton.disabled =
+                true;
+
+            systemStatus.textContent =
+                "AUTHORIZED";
+
+            connectionStatus.textContent =
+                "VERIFIED";
+
+        } catch (error) {
+
+            console.error(error);
+
+            systemStatus.textContent =
+                "ERROR";
+
+            connectionStatus.textContent =
+                "FAILED";
+
+            setMessage(
+                "Verification could not be completed. Please try again.",
+                "error"
+            );
+
+            addTerminal(
+                "Verification process failed.",
+                "error"
+            );
+
+            verifyButton.disabled =
+                false;
+
+            verifyButton.textContent =
+                "RETRY VERIFICATION";
+
+            setProgress(
+                0,
+                "VERIFICATION FAILED"
+            );
+        }
+    }
+);
+
+copyButton.addEventListener(
+    "click",
+    async () => {
+
+        if (!currentKey) {
+            return;
+        }
+
+        try {
+
+            await navigator.clipboard.writeText(
+                currentKey
+            );
+
+            copyMessage.textContent =
+                "ACCESS KEY COPIED TO CLIPBOARD.";
+
+            copyMessage.className =
+                "message success";
+
+            copyButton.textContent =
+                "COPIED";
+
+            setTimeout(() => {
+
+                copyButton.textContent =
+                    "COPY ACCESS KEY";
+
+            }, 1800);
+
+        } catch {
+
+            copyMessage.textContent =
+                "COPY FAILED. SELECT THE KEY MANUALLY.";
+
+            copyMessage.className =
+                "message error";
+        }
+    }
+);
+
+window.addEventListener(
+    "load",
+    () => {
+
+        sessionId =
+            createSessionId();
+
+        addTerminal(
+            "Client initialized."
+        );
+
+        addTerminal(
+            "Secure session prepared."
+        );
+    }
+);
+</script>
+
+</body>
+</html>
+
